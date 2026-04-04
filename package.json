@@ -1,0 +1,21 @@
+{
+  "name": "mcp-essence-qc",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "run": "tsx src/index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.27.1",
+    "tsx": "^4.21.0",
+    "zod": "^4.3.6"
+  }
+}
