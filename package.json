@@ -16,6 +16,7 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.27.1",
     "tsx": "^4.21.0",
-    "zod": "^4.3.6"
+    "zod": "^4.3.6",
+    "zod-geojson": "^1.6.4"
   }
 }
