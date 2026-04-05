@@ -1,11 +1,16 @@
-import { GeoJSONSchema, type GeoJSON } from "zod-geojson";
+import z from "zod";
+import { GeoJSON2DPointSchema, GeoJSONFeatureCollectionGenericSchema } from "zod-geojson";
+import { GeoPointRBush } from "./rbush";
+import { FeaturePropertySchema } from "./types";
 
 let cachedETag: string | undefined = undefined;
-let cachedData: GeoJSON | undefined = undefined;
+let cachedData: GeoPointRBush | undefined = undefined;
 
 const API_URL = "https://regieessencequebec.ca/stations.geojson.gz";
 
-async function fetchData(): Promise<GeoJSON> {
+const ApiResponseSchema = GeoJSONFeatureCollectionGenericSchema(z.array(z.number()), FeaturePropertySchema, GeoJSON2DPointSchema)
+
+async function fetchData(): Promise<GeoPointRBush> {
     if (cachedData !== undefined && cachedETag !== undefined) {
         // first check if the cache is expired
         const headResponse = await fetch(API_URL, {
@@ -29,11 +34,11 @@ async function fetchData(): Promise<GeoJSON> {
     }
 
     const body = await response.json();
-    const parsedData = GeoJSONSchema.parse(body);
+    const parsedData = ApiResponseSchema.parse(body);
 
     // save cache
-    cachedData = parsedData;
     cachedETag = response.headers.get("etag") || undefined;
+    cachedData = new GeoPointRBush().load(parsedData.features);
 
-    return parsedData;
+    return cachedData;
 }

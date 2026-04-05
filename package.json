@@ -11,10 +11,12 @@
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^25.5.0",
+    "@types/rbush": "^4.0.0",
     "typescript": "^5.9.3"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.27.1",
+    "rbush": "^4.0.1",
     "tsx": "^4.21.0",
     "zod": "^4.3.6",
     "zod-geojson": "^1.6.4"
