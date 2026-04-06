@@ -84,7 +84,13 @@ function findGasPrice(prices: GasPrices, targetType: GasType | undefined) {
         Math.min(...(filtered.map(p => p.Price) as number[]));
 }
 
-export async function findStationsWithinRadius(pos: Coordinates, findParams: FindParameters, sortParams: SortParameters = defaultSortParams) {
+type Candidate = z.infer<typeof FeaturePropertySchema> & {
+    coordinates: Coordinates;
+    distance: number;
+    score: number;
+};
+
+export async function findStationsWithinRadius(pos: Coordinates, findParams: FindParameters, sortParams: SortParameters = defaultSortParams): Promise<Candidate[]> {
     const tree = await fetchData();
     const centerPoint = turf.point(pos);
 
@@ -112,14 +118,19 @@ export async function findStationsWithinRadius(pos: Coordinates, findParams: Fin
         .map(c => {
             const dist = turf.distance(centerPoint, c, { units: 'kilometers' });
 
-            let price = findGasPrice(c.properties.Prices, targetType);
-            price = typeof price === "number" ? price : (sortParams.order === 'asc' ? Infinity : -Infinity);
+            const price = findGasPrice(c.properties.Prices, targetType);
+            if (typeof price !== "number") {
+                return null;
+            }
 
             const weightedDist = normalize(dist, minD, maxD) * sortParams.distanceFactor;
             const weightedPrice = normalize(price, minP, maxP) * sortParams.priceFactor;
 
             return { ...c.properties, coordinates: c.geometry.coordinates, distance: dist, score: weightedDist + weightedPrice };
         })
-        .filter(f => f.distance <= radiusKm)
-        .sort((a, b) => a.score - b.score);
+        .filter((f): f is Candidate => f !== null && f.distance <= radiusKm)
+        .sort((a, b) => sortParams.order === 'asc' ?
+            a.score - b.score :
+            b.score - a.score
+        );
 }

@@ -2,7 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import z from "zod";
 import { findStationsWithinRadius } from "./data-source";
-import {GasType, GasTypeSchema} from "./types";
+import { GasType, GasTypeSchema } from "./types";
 
 // Create server instance
 const server = new McpServer({
@@ -28,8 +28,25 @@ server.registerTool("query_gas_stations", {
         priceFactor: zeroToOneSchema.clone()
             .describe("How important to consider price when computing the relevance of a result. Must sum to 1 with `distanceFactor`")
             .default(0.5),
+        cursor: z.string().default("0"),
+        limit: z.number().default(20),
     },
-}, async ({ longitude, latitude, radiusKm, targetGasType, sortOrder, distanceFactor, priceFactor }) => {
+    outputSchema: {
+        stations: z.array(z.looseObject({
+            coordinates: z.array(z.number()).length(2).describe("Coordinates (latitude, longitude)"),
+            distance: z.number().describe("Distance from the provided coordinates"),
+            Name: z.string().describe("Name of the station"),
+            Brand: z.string().optional().describe("Brand of the station"),
+            Prices: z.array(z.object({
+                GasType: z.string().toLowerCase().describe("Type of gas (in French)"),
+                Price: z.number().nullable().describe("Price of gas, if available"),
+                IsAvailable: z.boolean(),
+            })),
+            Address: z.string().describe("Address of the station"),
+            score: z.number().describe("Relevance score (lower is better)"),
+        })).describe("List of stations matching the query"),
+    }
+}, async ({longitude, latitude, radiusKm, targetGasType, sortOrder, distanceFactor, priceFactor, cursor, limit }) => {
     const stations = await findStationsWithinRadius([longitude, latitude],
         { radiusKm, targetType: targetGasType },
         { order: sortOrder, distanceFactor, priceFactor }
@@ -48,35 +65,23 @@ server.registerTool("query_gas_stations", {
         };
     }
 
-    const formattedStations = stations.map((station) => [
-        `Coordinates: (${station.coordinates.join(",")})`,
-        `Distance from ${currentCoordinatesFormatted}: ${station.distance}km`,
-        `Name: ${station.Name}`,
-        `Brand: ${station.brand}`,
-        `Prices: ${station.Prices.filter(p => p.IsAvailable)
-            .map(price => `${price.Price} (${price.GasType})`)
-            .join(', ')}`,
-        `Address: ${station.Address}`,
-        `Relevance score: ${station.score}`,
-        "---------"
-    ].join("\n"));
-
-    const resultText = `Here are a list of stations matching the parameters:\n\n${formattedStations.join("\n")}`;
+    // slice to paginate results
+    // TODO: use caching so we don't have to recompute for every pagination
+    const offset = parseInt(cursor, 10);
+    const page = stations.slice(offset, offset + limit);
 
     return {
-        content: [
-            {
-                type: "text",
-                text: resultText,
-            }
-        ]
+        content: [],
+        structuredContent: {
+            stations: page,
+        },
+        nextCursor: `${offset + limit}`
     };
 });
 
 async function main() {
     const transport = new StdioServerTransport();
     await server.connect(transport);
-    console.log("Essence QC MCP Server running on stdio");
 }
 
 main().catch((error) => {

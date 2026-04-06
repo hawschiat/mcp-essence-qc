@@ -1,11 +1,15 @@
 import z from "zod";
 
 const GasPricesSchema = z.array(z.object({
-    GasType: z.string().lowercase(),
-    Price: z.string().transform(s => {
-        const match = s.match(/^(\d|\.)+¢$/);
-        if (match && match[1]) {
-            return Number(match[1]);
+    GasType: z.string().toLowerCase(),
+    Price: z.string().nullable().transform(s => {
+        if (!s) {
+            return null;
+        }
+
+        const match = s.match(/[\d.]+/);
+        if (match && match[0]) {
+            return Number(match[0]);
         }
         return null;
     }),
@@ -16,12 +20,12 @@ export type GasPrices = z.infer<typeof GasPricesSchema>;
 
 export const FeaturePropertySchema = z.object({
     // normalize the values by lowercasing
-    Name: z.string().lowercase(),
-    brand: z.string().lowercase(),
-    status: z.string().lowercase(),
-    Address: z.string().lowercase(),
-    PostalCode: z.string().lowercase(),
-    Region: z.string().lowercase(),
+    Name: z.string().toLowerCase(),
+    brand: z.string().toLowerCase().nullable(),
+    Status: z.string().toLowerCase(),
+    Address: z.string().toLowerCase(),
+    PostalCode: z.string().toLowerCase(),
+    Region: z.string().toLowerCase(),
     Prices: GasPricesSchema,
 });
 

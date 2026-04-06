@@ -5,6 +5,7 @@
   "scripts": {
     "start": "tsx src/index.ts",
     "build": "tsc",
+    "debug": "npm run build && npx @modelcontextprotocol/inspector node dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
