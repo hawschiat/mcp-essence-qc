@@ -8,6 +8,7 @@ let cachedETag: string | undefined = undefined;
 let cachedData: GeoPointRBush | undefined = undefined;
 
 const API_URL = "https://regieessencequebec.ca/stations.geojson.gz";
+const USER_AGENT = "mcp-essence-qc/1.0"
 
 const ApiResponseSchema = GeoJSONFeatureCollectionGenericSchema(z.array(z.number()), FeaturePropertySchema, GeoJSON2DPointSchema)
 
@@ -15,7 +16,10 @@ async function fetchData(): Promise<GeoPointRBush> {
     if (cachedData !== undefined && cachedETag !== undefined) {
         // first check if the cache is expired
         const headResponse = await fetch(API_URL, {
-            method: "HEAD"
+            method: "HEAD",
+            headers: {
+                "User-Agent": USER_AGENT,
+            }
         });
 
         if (headResponse.ok) {
@@ -29,7 +33,11 @@ async function fetchData(): Promise<GeoPointRBush> {
         }
     }
 
-    const response = await fetch(API_URL);
+    const response = await fetch(API_URL, {
+        headers: {
+            "User-Agent": USER_AGENT,
+        }
+    });
     if (!response.ok) {
         throw new Error(`Request failed with status ${response.status} and body "${await response.text()}"`);
     }
@@ -76,7 +84,7 @@ function findGasPrice(prices: GasPrices, targetType: GasType | undefined) {
         Math.min(...(filtered.map(p => p.Price) as number[]));
 }
 
-async function findStationsWithinRadius(pos: Coordinates, findParams: FindParameters, sortParams: SortParameters = defaultSortParams) {
+export async function findStationsWithinRadius(pos: Coordinates, findParams: FindParameters, sortParams: SortParameters = defaultSortParams) {
     const tree = await fetchData();
     const centerPoint = turf.point(pos);
 
@@ -110,7 +118,7 @@ async function findStationsWithinRadius(pos: Coordinates, findParams: FindParame
             const weightedDist = normalize(dist, minD, maxD) * sortParams.distanceFactor;
             const weightedPrice = normalize(price, minP, maxP) * sortParams.priceFactor;
 
-            return { ...c.properties, distance: dist, score: weightedDist + weightedPrice };
+            return { ...c.properties, coordinates: c.geometry.coordinates, distance: dist, score: weightedDist + weightedPrice };
         })
         .filter(f => f.distance <= radiusKm)
         .sort((a, b) => a.score - b.score);
