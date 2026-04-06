@@ -76,7 +76,7 @@ server.registerTool("query_gas_stations", {
 async function main() {
     const transport = new StdioServerTransport();
     await server.connect(transport);
-    console.log("QC Essence MCP Server running on stdio");
+    console.log("Essence QC MCP Server running on stdio");
 }
 
 main().catch((error) => {
