@@ -61,7 +61,10 @@ server.registerTool("query_gas_stations", {
                     type: "text",
                     text: `Unable to find any stations within the ${radiusKm}km radius from ${currentCoordinatesFormatted}`
                 }
-            ]
+            ],
+            structuredContent: {
+                stations: []
+            }
         };
     }
 
