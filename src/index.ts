@@ -11,7 +11,7 @@ const server = new McpServer({
 });
 
 server.registerTool("query_gas_stations", {
-    description: "Query for gas stations within a specified radius, optionally with type of gas to focus on.",
+    description: "Query for gas stations within a specified radius.",
     inputSchema: {
         longitude: z.number().describe("Longitude"),
         latitude: z.number().describe("Latitude"),
@@ -40,7 +40,7 @@ server.registerTool("query_gas_stations", {
             })),
             Address: z.string().describe("Address of the station"),
             trueCost: z.number().describe("Cost of purchasing gas at this station, including round-trip fuel"),
-        })).describe("List of stations matching the query"),
+        })).describe("List of stations matching the query, sorted by the cost of purchasing gas at this station."),
     }
 }, async ({longitude, latitude, radiusKm, targetGasType, sortOrder, fuelConsumption, fillUpVolume, cursor, limit }) => {
     const stations = await findStationsWithinRadius([longitude, latitude],
