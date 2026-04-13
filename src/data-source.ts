@@ -58,8 +58,8 @@ const FindParametersSchema = z.object({
 });
 const SortParametersSchema = z.object({
     order: z.enum(["asc", "desc"]),
-    distanceFactor: z.number().min(0).max(1),
-    priceFactor: z.number().min(0).max(1),
+    fuelConsumption: z.number(),
+    fillUpVolume: z.number(),
 });
 
 type Coordinates = [number, number];
@@ -68,8 +68,8 @@ type SortParameters = z.infer<typeof SortParametersSchema>;
 
 const defaultSortParams: SortParameters = {
     order: 'asc',
-    distanceFactor: 0.5,
-    priceFactor: 0.5,
+    fuelConsumption: 8.9,
+    fillUpVolume: 50,
 };
 
 // Helper to normalize (0 to 1)
@@ -87,7 +87,7 @@ function findGasPrice(prices: GasPrices, targetType: GasType | undefined) {
 type Candidate = z.infer<typeof FeaturePropertySchema> & {
     coordinates: Coordinates;
     distance: number;
-    score: number;
+    trueCost: number;
 };
 
 export async function findStationsWithinRadius(pos: Coordinates, findParams: FindParameters, sortParams: SortParameters = defaultSortParams): Promise<Candidate[]> {
@@ -104,15 +104,6 @@ export async function findStationsWithinRadius(pos: Coordinates, findParams: Fin
     // returns points in the square
     const candidates = tree.search({ minX, minY, maxX, maxY });
 
-    const distances = candidates.map(c => turf.distance(centerPoint, c, { units: 'kilometers' }));
-    const prices = candidates.map(c => findGasPrice(c.properties.Prices, targetType))
-        .filter((p): p is number => typeof p === "number");
-
-    const maxD = Math.max(...distances);
-    const minD = Math.min(...distances);
-    const maxP = Math.max(...prices);
-    const minP = Math.min(...distances);
-
     // Sort by score
     return candidates
         .map(c => {
@@ -123,14 +114,21 @@ export async function findStationsWithinRadius(pos: Coordinates, findParams: Fin
                 return null;
             }
 
-            const weightedDist = normalize(dist, minD, maxD) * sortParams.distanceFactor;
-            const weightedPrice = normalize(price, minP, maxP) * sortParams.priceFactor;
+            // 1. Numeric price in dollars (e.g., 164.9¢ becomes 1.649)
+            const pricePerLiter = price / 100;
 
-            return { ...c.properties, coordinates: c.geometry.coordinates, distance: dist, score: weightedDist + weightedPrice };
+            // 2. Cost of the gas you are buying
+            const purchaseCost = sortParams.fillUpVolume * pricePerLiter;
+
+            // 3. Cost of the fuel burned (Round trip distance)
+            // Formula: (Total KM / 100) * L per 100km * Price per L
+            const travelCost = ((dist * 2) / 100) * sortParams.fuelConsumption * pricePerLiter;
+
+            return { ...c.properties, coordinates: c.geometry.coordinates, distance: dist, trueCost: purchaseCost + travelCost };
         })
         .filter((f): f is Candidate => f !== null && f.distance <= radiusKm)
         .sort((a, b) => sortParams.order === 'asc' ?
-            a.score - b.score :
-            b.score - a.score
+            a.trueCost - b.trueCost :
+            b.trueCost - a.trueCost
         );
 }

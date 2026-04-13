@@ -10,8 +10,6 @@ const server = new McpServer({
     version: "1.0.0",
 });
 
-const zeroToOneSchema = z.number().min(0).max(1);
-
 server.registerTool("query_gas_stations", {
     description: "Query for gas stations within a specified radius, optionally with type of gas to focus on.",
     inputSchema: {
@@ -22,12 +20,10 @@ server.registerTool("query_gas_stations", {
             .describe("Type of gas to target on when sorting by prices.")
             .default(GasType.REGULAR),
         sortOrder: z.enum(["asc", "desc"]).default("asc"),
-        distanceFactor: zeroToOneSchema.clone()
-            .describe("How important to consider distance when computing the relevance of a result. Must sum to 1 with `priceFactor`")
-            .default(0.5),
-        priceFactor: zeroToOneSchema.clone()
-            .describe("How important to consider price when computing the relevance of a result. Must sum to 1 with `distanceFactor`")
-            .default(0.5),
+        fuelConsumption: z.number()
+            .describe("Fuel consumption, in litre/100km, defaults to 8.9, which is standard for mid-size SUV/crossover.")
+            .default(8.9),
+        fillUpVolume: z.number().describe("Fill up volume, defaults to 50L.").default(50),
         cursor: z.string().default("0"),
         limit: z.number().default(20),
     },
@@ -43,13 +39,13 @@ server.registerTool("query_gas_stations", {
                 IsAvailable: z.boolean(),
             })),
             Address: z.string().describe("Address of the station"),
-            score: z.number().describe("Relevance score (lower is better)"),
+            trueCost: z.number().describe("Cost of purchasing gas at this station, including round-trip fuel"),
         })).describe("List of stations matching the query"),
     }
-}, async ({longitude, latitude, radiusKm, targetGasType, sortOrder, distanceFactor, priceFactor, cursor, limit }) => {
+}, async ({longitude, latitude, radiusKm, targetGasType, sortOrder, fuelConsumption, fillUpVolume, cursor, limit }) => {
     const stations = await findStationsWithinRadius([longitude, latitude],
         { radiusKm, targetType: targetGasType },
-        { order: sortOrder, distanceFactor, priceFactor }
+        { order: sortOrder, fuelConsumption, fillUpVolume }
     );
 
     const currentCoordinatesFormatted = `(${latitude}, ${longitude})`
