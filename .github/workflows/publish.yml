@@ -21,16 +21,13 @@ jobs:
       - name: Build Project
         run: |
           npm install
-          npm run build # Ensure this generates your /dist folder
+          npm run build:prod
 
       - name: Prepare Bundle Directory
         run: |
           mkdir -p mcpb-package
           cp -r dist mcpb-package/
-          cp manifest.json package.json package-lock.json mcpb-package/
-          # Install only production deps inside the package
-          cd mcpb-package
-          npm install --omit=dev
+          cp manifest.json package.json mcpb-package/
 
       - name: Create .mcpb Archive
         run: |
