@@ -18,6 +18,8 @@ Demandez à votre agent préféré de trouver l’essence au meilleur prix près
 2. Download the latest `.mcpb` build.
 3. Load the file to Claude Desktop to install the server.
 
+Detailed instructions available at [Claude Docs](https://claude.com/docs/connectors/building/mcpb#how-users-install-your-mcpb).
+
 ### Build Locally
 
 1. Pull this repo and install dependencies using `npm install`.
@@ -57,6 +59,8 @@ Then, restart Claude desktop.
 1. Trouve [la dernière version (release)](https://github.com/hawschiat/mcp-essence-qc/releases).
 2. Télécharge le plus récent fichier `.mcpb`.
 3. Charge le fichier dans Claude Desktop pour installer le serveur.
+
+Instructions détaillées disponibles sur le site [Claude Docs](https://claude.com/docs/connectors/building/mcpb#how-users-install-your-mcpb).
 
 ### Bâtir localement
 
