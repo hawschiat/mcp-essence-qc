@@ -1,0 +1,39 @@
+{
+  "manifest_version": "0.2",
+  "name": "mcp-essence-qc",
+  "version": "1.0.0",
+  "description": "Find and sort gas stations in Quebec",
+  "long_description": "Find and sort gas stations in Quebec, based on the Régie Essence Québec data",
+  "author": {
+    "name": "Seng Chiat Haw",
+    "url": "https://github.com/hawschiat"
+  },
+  "screenshots": [
+    "screenshots/claude-essence-qc-en.png",
+    "screenshots/claude-essence-qc-fr.png"
+  ],
+  "server": {
+    "type": "node",
+    "entry_point": "dist/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/dist/index.js"
+      ],
+      "env": {}
+    }
+  },
+  "keywords": [
+    "quebec",
+    "gas",
+    "gas stations",
+    "station-service",
+    "essence",
+    "regie essence"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hawschiat/mcp-essence-qc"
+  }
+}
