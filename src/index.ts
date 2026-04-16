@@ -11,20 +11,27 @@ const server = new McpServer({
 });
 
 server.registerTool(
-    "request_user_location",
+    "request_user_input",
     {
-        description: "Call this FIRST to prompt the user for their exact location before any location-based search.",
+        description: "Call this FIRST to prompt the user for their exact location and search radius before any location-based search.",
     },
     async () => ({
         content: [{
             type: "text",
-            text: "Please ask the user for their exact location (postal code, coordinates, etc.) in order to find accurate results."
+            text: "Please ask the user for their exact location (postal code, coordinates, etc.) and search parameters that " +
+                "they may optionally provide in order to find accurate results.\n\n" +
+                "Agent should list out the relevant search parameters that users may provide:\n" +
+                "1. Search radius - SHOULD recommend users to provide to get accurate results\n" +
+                "2. Target gas type\n" +
+                "3. Fuel consumption, in litre/100km\n" +
+                "4. Fill up volume, in litre"
         }]
     })
 );
 
 server.registerTool("query_gas_stations", {
-    description: "Query for gas stations within a specified radius. Only call this AFTER calling request_user_location and receiving a confirmed location from the user.",
+    description: "Query for gas stations within a specified radius. Only call this AFTER calling request_user_input and " +
+        "receiving a confirmed location + search parameters from the user.",
     inputSchema: {
         longitude: z.number().describe("User's confirmed longitude"),
         latitude: z.number().describe("User's confirmed latitude"),
