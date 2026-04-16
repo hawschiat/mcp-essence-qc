@@ -6,7 +6,7 @@
     "start": "tsx src/index.ts",
     "build": "tsc",
     "build:watch": "tsc -w",
-    "build:prod": "esbuild src/index.ts --bundle --platform=node --outfile=dist/index.js",
+    "build:prod": "esbuild src/index.ts --bundle --platform=node --format=esm --outfile=dist/index.js",
     "debug": "npx @modelcontextprotocol/inspector node dist/index.js",
     "debug:watch": "concurrently \"npm run build:watch\" \"npm run debug\"",
     "test": "echo \"Error: no test specified\" && exit 1"
