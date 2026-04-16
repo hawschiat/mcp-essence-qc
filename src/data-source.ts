@@ -1,8 +1,8 @@
 import * as turf from "@turf/turf"
 import z from "zod";
 import { GeoJSON2DPointSchema, GeoJSONFeatureCollectionGenericSchema } from "zod-geojson";
-import { GeoPointRBush } from "./rbush";
-import { FeaturePropertySchema, GasPrices, GasType, GasTypeSchema } from "./types";
+import { GeoPointRBush } from "./rbush.js";
+import { FeaturePropertySchema, GasPrices, GasType, GasTypeSchema } from "./types.js";
 
 let cachedETag: string | undefined = undefined;
 let cachedData: GeoPointRBush | undefined = undefined;

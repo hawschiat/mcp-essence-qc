@@ -1,7 +1,7 @@
 import RBush from "rbush";
 import z from "zod";
 import { GeoJSON2DPointSchema, GeoJSONFeatureGenericSchema } from "zod-geojson";
-import { FeaturePropertySchema } from "./types";
+import { FeaturePropertySchema } from "./types.js";
 
 const GeoPointSchema = GeoJSONFeatureGenericSchema(z.array(z.number()), FeaturePropertySchema, GeoJSON2DPointSchema)
 type GeoPoint = z.infer<typeof GeoPointSchema>;

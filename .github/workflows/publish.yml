@@ -25,8 +25,6 @@ jobs:
 
       - name: Create .mcpb Archive
         run: |
-          rm -rf node_modules/*
-          npm install -g @anthropic-ai/mcpb
           mcpb pack . mcp-essence-qc-${{ github.ref_name }}.mcpb
 
       - name: Create Release

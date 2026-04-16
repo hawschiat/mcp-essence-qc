@@ -1,8 +1,8 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import z from "zod";
-import { findStationsWithinRadius } from "./data-source";
-import { GasType, GasTypeSchema } from "./types";
+import { findStationsWithinRadius } from "./data-source.js";
+import { GasType, GasTypeSchema } from "./types.js";
 
 // Create server instance
 const server = new McpServer({
