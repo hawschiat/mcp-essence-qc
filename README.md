@@ -2,9 +2,23 @@
 
 Demandez à votre agent préféré de trouver l’essence au meilleur prix près de chez vous ⛽ Ask your favorite agent to find the best priced gas around you
 
+<img src="screenshots/claude-essence-qc-en.png" alt="en" width="700">
+<img src="screenshots/claude-essence-qc-fr.png" alt="fr" width="700">
+
+## Prerequisite
+
+- [Node.js 22+](https://nodejs.org/en/download)
+- MCP Client (e.g. Claude Desktop)
+
 ## How to Use
 
-### Locally
+### MCPB (Easiest)
+
+1. Find the latest [release](https://github.com/hawschiat/mcp-essence-qc/releases).
+2. Download the latest `.mcpb` build.
+3. Load the file to Claude Desktop to install the server.
+
+### Build Locally
 
 1. Pull this repo and install dependencies using `npm install`.
 2. Build the server by running `npm run build`.
@@ -31,9 +45,20 @@ Then, restart Claude desktop.
 
 ---
 
+## Prérequis
+
+- [Node.js 22+](https://nodejs.org/fr/download)
+- Un client MCP (par exemple : Claude Desktop)
+
 ## Comment s'en servir
 
-### En local
+### MCPB (Le plus facile)
+
+1. Trouve [la dernière version (release)](https://github.com/hawschiat/mcp-essence-qc/releases).
+2. Télécharge le plus récent fichier `.mcpb`.
+3. Charge le fichier dans Claude Desktop pour installer le serveur.
+
+### Bâtir localement
 
 1. Clone le repo et installe les dépendances avec la commande `npm install`.
 2. Bâtis le serveur en lançant `npm run build`.
