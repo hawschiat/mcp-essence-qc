@@ -18,13 +18,10 @@ jobs:
           node-version: '22'
           cache: 'npm'
 
-      - name: Build Project
+      - name: Build Project and Create .mcpb Archive
         run: |
           npm install
           npm run build:prod
-
-      - name: Create .mcpb Archive
-        run: |
           mcpb pack . mcp-essence-qc-${{ github.ref_name }}.mcpb
 
       - name: Create Release
