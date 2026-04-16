@@ -18,10 +18,14 @@ jobs:
           node-version: '22'
           cache: 'npm'
 
-      - name: Build Project and Create .mcpb Archive
+      - name: Build Project
         run: |
           npm install
           npm run build:prod
+
+      - name: Create .mcpb Archive
+        run: |
+          npm install -g @anthropic-ai/mcpb
           mcpb pack . mcp-essence-qc-${{ github.ref_name }}.mcpb
 
       - name: Create Release
