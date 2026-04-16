@@ -23,16 +23,11 @@ jobs:
           npm install
           npm run build:prod
 
-      - name: Prepare Bundle Directory
-        run: |
-          mkdir -p mcpb-package
-          cp -r dist mcpb-package/
-          cp manifest.json package.json mcpb-package/
-
       - name: Create .mcpb Archive
         run: |
-          cd mcpb-package
-          zip -r ../mcp-essence-qc-${{ github.ref_name }}.mcpb .
+          rm -rf node_modules/*
+          npm install -g @anthropic-ai/mcpb
+          mcpb pack . mcp-essence-qc-${{ github.ref_name }}.mcpb
 
       - name: Create Release
         uses: softprops/action-gh-release@v3
