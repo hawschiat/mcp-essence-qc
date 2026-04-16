@@ -27,7 +27,7 @@ jobs:
         run: |
           mkdir -p mcpb-package
           cp -r dist mcpb-package/
-          cp package.json package-lock.json mcpb-package/
+          cp manifest.json package.json package-lock.json mcpb-package/
           # Install only production deps inside the package
           cd mcpb-package
           npm install --omit=dev
@@ -35,7 +35,7 @@ jobs:
       - name: Create .mcpb Archive
         run: |
           cd mcpb-package
-          zip -r ../server-${{ github.ref_name }}.mcpb .
+          zip -r ../mcp-essence-qc-${{ github.ref_name }}.mcpb .
 
       - name: Create Release
         uses: softprops/action-gh-release@v3
