@@ -23,6 +23,18 @@
       "env": {}
     }
   },
+  "compatibility": {
+    "claude_desktop": ">=0.10.0",
+    "runtimes": {
+      "node": ">=22.14.0"
+    }
+  },
+  "tools": [
+    {
+      "name": "query_gas_stations",
+      "description": "Query for gas stations in Quebec within a specified radius"
+    }
+  ],
   "keywords": [
     "quebec",
     "gas",
