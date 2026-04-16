@@ -7,7 +7,7 @@ Demandez à votre agent préféré de trouver l’essence au meilleur prix près
 
 ## Prerequisite
 
-- [Node.js 22+](https://nodejs.org/en/download)
+- [Node.js 22+](https://nodejs.org/en/download) (Should be included when you install Claude Desktop)
 - MCP Client (e.g. Claude Desktop)
 
 ## How to Use
@@ -47,7 +47,7 @@ Then, restart Claude desktop.
 
 ## Prérequis
 
-- [Node.js 22+](https://nodejs.org/fr/download)
+- [Node.js 22+](https://nodejs.org/fr/download) (Devrait être inclus lors de l'installation de Claude Desktop)
 - Un client MCP (par exemple : Claude Desktop)
 
 ## Comment s'en servir
