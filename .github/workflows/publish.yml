@@ -1,0 +1,45 @@
+name: Package MCPB
+
+on:
+  push:
+    tags:
+      - 'v*' # Triggers on version tags (e.g., v1.0.0)
+
+jobs:
+  build-and-bundle:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Build Project
+        run: |
+          npm install
+          npm run build # Ensure this generates your /dist folder
+
+      - name: Prepare Bundle Directory
+        run: |
+          mkdir -p mcpb-package
+          cp -r dist mcpb-package/
+          cp package.json package-lock.json mcpb-package/
+          # Install only production deps inside the package
+          cd mcpb-package
+          npm install --omit=dev
+
+      - name: Create .mcpb Archive
+        run: |
+          cd mcpb-package
+          zip -r ../server-v${{ github.ref_name }}.mcpb .
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: "*.mcpb"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
