@@ -6,8 +6,9 @@ Demandez à votre agent préféré de trouver l’essence au meilleur prix près
 
 ### Locally
 
-1. Build the server by running `npm run build`.
-2. Configure your agent to use this MCP server.
+1. Pull this repo and install dependencies using `npm install`.
+2. Build the server by running `npm run build`.
+3. Configure your agent to use this MCP server.
 
 #### Example: Claude Desktop
 
