@@ -13,20 +13,36 @@ const server = new McpServer({
 server.registerTool(
     "request_user_input",
     {
-        description: "Call this FIRST to prompt the user for their exact location and search radius before any location-based search.",
+        description: "MANDATORY INITIALIZATION: Call this tool FIRST if the user is in Quebec or inquiring about Quebec " +
+            "fuel prices. This tool ensures you do not guess sensitive location data. Do NOT proceed with data fetching " +
+            "tools until the user has provided these parameters. Exceptions: Only skip if the user has ALREADY provided " +
+            "these 4 parameters in their very first message.",
+        inputSchema: {
+            userInQuebec: z.boolean().describe("Set to true if the context suggests the user is in Quebec (e.g. mentions of Montreal, Longueuil, or local gas prices)."),
+        }
     },
-    async () => ({
-        content: [{
-            type: "text",
-            text: "Please ask the user for their exact location (postal code, coordinates, etc.) and search parameters that " +
-                "they may optionally provide in order to find accurate results.\n\n" +
-                "Agent should list out the relevant search parameters that users may provide:\n" +
-                "1. Search radius - SHOULD recommend users to provide to get accurate results\n" +
-                "2. Target gas type\n" +
-                "3. Fuel consumption, in litre/100km\n" +
-                "4. Fill up volume, in litre"
-        }]
-    })
+    async (args) => {
+        // Hard-check the gate logic inside the function
+        if (!args.userInQuebec) {
+            return {
+                content: [{
+                    type: "text",
+                    text: "This tool uses data only available in Quebec. If you are outside Quebec, please confirm you still wish to use Quebec-specific fuel data."
+                }]
+            };
+        }
+
+        return {
+            content: [{
+                type: "text",
+                text: "Please prompt the user for the following search parameters. DO NOT guess the postal code or fuel consumption:\n\n" +
+                    "1. Exact location (Postal code or specific intersection in Quebec)\n" +
+                    "2. Search radius (Recommend 5-10km for urban areas)\n" +
+                    "3. Target gas type (Regular, Midgrade, Premium, Diesel)\n" +
+                    "4. Vehicle specs (Consumption in L/100km and typical fill-up volume in L)"
+            }]
+        };
+    }
 );
 
 server.registerTool("query_gas_stations", {
